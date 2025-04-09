@@ -1,0 +1,43 @@
+name: Deploy DynamoDB SAM Template
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      # Step 3: Install SAM CLI
+      - name: Install SAM CLI
+        run: |
+          curl -L https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip -o samcli.zip
+          unzip samcli.zip -d sam_installation
+          sudo ./sam_installation/install
+          sam --version
+
+      # Step 4: SAM Build
+      - name: SAM Build
+        run: sam build
+
+      # Step 5: SAM Deploy
+      - name: SAM Deploy
+        run: |
+          sam deploy \
+            --stack-name TodoDynamoDBStack \
+            --capabilities CAPABILITY_IAM \
+            --region eu-central-1 \
+            --no-fail-on-empty-changeset \
+            --no-confirm-changeset
