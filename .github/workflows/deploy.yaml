@@ -25,7 +25,7 @@ jobs:
         run: |
           curl -L https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip -o samcli.zip
           unzip samcli.zip -d sam_installation
-          sudo ./sam_installation/install
+          sudo ./sam_installation/install --update
           sam --version
 
       # Step 4: SAM Build
